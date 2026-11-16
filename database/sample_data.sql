@@ -9,6 +9,7 @@ TRUNCATE TABLE bookings RESTART IDENTITY CASCADE;
 TRUNCATE TABLE seats RESTART IDENTITY CASCADE;
 TRUNCATE TABLE passengers RESTART IDENTITY CASCADE;
 TRUNCATE TABLE buses RESTART IDENTITY CASCADE;
+TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 
 -- ----------------------------------------------------------------------------
 -- 1. INSERT BUSES (Diverse Types & Major Intercity Routes)
@@ -97,17 +98,36 @@ INSERT INTO seats (bus_id, seat_number, seat_type, seat_status, deck, row_num, c
 -- ----------------------------------------------------------------------------
 -- INSERT SEATS FOR BUS 5 (Mumbai -> Pune, 30 Seats, 2+1 Luxury Layout)
 -- ----------------------------------------------------------------------------
-DO $$
-DECLARE
-    r INT;
-BEGIN
-    FOR r IN 1..10 LOOP
-        INSERT INTO seats (bus_id, seat_number, seat_type, seat_status, deck, row_num, col_num) VALUES
-        (5, (r*3 - 2)::text || 'W', 'WINDOW', CASE WHEN r IN (1, 4) THEN 'BOOKED' ELSE 'AVAILABLE' END, 'LOWER', r, 1),
-        (5, (r*3 - 1)::text || 'A', 'AISLE',  CASE WHEN r = 1 THEN 'BOOKED' ELSE 'AVAILABLE' END, 'LOWER', r, 2),
-        (5, (r*3)::text || 'S',     'WINDOW', CASE WHEN r = 7 THEN 'BOOKED' ELSE 'AVAILABLE' END, 'LOWER', r, 3);
-    END LOOP;
-END $$;
+INSERT INTO seats (bus_id, seat_number, seat_type, seat_status, deck, row_num, col_num)
+SELECT 
+    5,
+    (r*3 - 2)::text || 'W',
+    'WINDOW',
+    CASE WHEN r IN (1, 4) THEN 'BOOKED' ELSE 'AVAILABLE' END,
+    'LOWER',
+    r,
+    1
+FROM generate_series(1, 10) AS r
+UNION ALL
+SELECT 
+    5,
+    (r*3 - 1)::text || 'A',
+    'AISLE',
+    CASE WHEN r = 1 THEN 'BOOKED' ELSE 'AVAILABLE' END,
+    'LOWER',
+    r,
+    2
+FROM generate_series(1, 10) AS r
+UNION ALL
+SELECT 
+    5,
+    (r*3)::text || 'S',
+    'WINDOW',
+    CASE WHEN r = 7 THEN 'BOOKED' ELSE 'AVAILABLE' END,
+    'LOWER',
+    r,
+    3
+FROM generate_series(1, 10) AS r;
 
 -- ----------------------------------------------------------------------------
 -- 3. INSERT SAMPLE PASSENGERS
@@ -120,11 +140,22 @@ INSERT INTO passengers (passenger_id, full_name, age, gender, mobile_number, ema
 SELECT setval('passengers_passenger_id_seq', (SELECT MAX(passenger_id) FROM passengers));
 
 -- ----------------------------------------------------------------------------
+-- 0. INSERT SAMPLE USERS
+-- ----------------------------------------------------------------------------
+INSERT INTO users (user_id, full_name, email, mobile_number, password_hash) VALUES
+(1, 'Aarav Sharma', 'aarav@example.com', '9876543210', 'password123'),
+(2, 'Priya Verma', 'priya@example.com', '9876543211', 'password123'),
+(3, 'Rajesh Patel', 'rajesh@example.com', '9123456789', 'password123'),
+(4, 'Ayush', 'ayush@example.com', '9876543212', 'password123');
+
+SELECT setval('users_user_id_seq', (SELECT MAX(user_id) FROM users));
+
+-- ----------------------------------------------------------------------------
 -- 4. INSERT SAMPLE BOOKINGS
 -- ----------------------------------------------------------------------------
-INSERT INTO bookings (booking_id, pnr_number, bus_id, journey_date, booking_date, total_fare, booking_status, contact_phone, contact_email) VALUES
-(1, 'PNR-8849201', 1, CURRENT_DATE + INTERVAL '1 day', CURRENT_TIMESTAMP - INTERVAL '2 hours', 1300.00, 'CONFIRMED', '9876543210', 'aarav.sharma@example.com'),
-(2, 'PNR-7731945', 1, CURRENT_DATE + INTERVAL '1 day', CURRENT_TIMESTAMP - INTERVAL '5 hours', 1300.00, 'CONFIRMED', '9123456789', 'rajesh.patel@example.com');
+INSERT INTO bookings (booking_id, user_id, pnr_number, bus_id, journey_date, booking_date, total_fare, booking_status, contact_phone, contact_email) VALUES
+(1, 1, 'PNR-8849201', 1, CURRENT_DATE + INTERVAL '1 day', CURRENT_TIMESTAMP - INTERVAL '2 hours', 1300.00, 'CONFIRMED', '9876543210', 'aarav.sharma@example.com'),
+(2, 1, 'PNR-7731945', 1, CURRENT_DATE + INTERVAL '1 day', CURRENT_TIMESTAMP - INTERVAL '5 hours', 1300.00, 'CONFIRMED', '9123456789', 'rajesh.patel@example.com');
 
 SELECT setval('bookings_booking_id_seq', (SELECT MAX(booking_id) FROM bookings));
 

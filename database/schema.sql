@@ -13,12 +13,29 @@ DROP TABLE IF EXISTS bookings CASCADE;
 DROP TABLE IF EXISTS seats CASCADE;
 DROP TABLE IF EXISTS passengers CASCADE;
 DROP TABLE IF EXISTS buses CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
 
 -- Drop existing types if recreating
 DROP TYPE IF EXISTS bus_type_enum CASCADE;
 DROP TYPE IF EXISTS seat_type_enum CASCADE;
 DROP TYPE IF EXISTS seat_status_enum CASCADE;
 DROP TYPE IF EXISTS booking_status_enum CASCADE;
+
+-- ----------------------------------------------------------------------------
+-- 0. USERS TABLE
+-- Stores authenticated user accounts and credential hashes.
+-- ----------------------------------------------------------------------------
+CREATE TABLE users (
+    user_id              SERIAL PRIMARY KEY,
+    full_name            VARCHAR(120) NOT NULL,
+    email                VARCHAR(150) NOT NULL UNIQUE,
+    mobile_number        VARCHAR(15) NOT NULL,
+    password_hash        VARCHAR(255) NOT NULL,
+    created_at           TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_users_email ON users (LOWER(email));
+CREATE INDEX idx_users_mobile ON users (mobile_number);
 
 -- ----------------------------------------------------------------------------
 -- 1. BUSES TABLE
@@ -86,6 +103,7 @@ CREATE INDEX idx_seats_bus_status ON seats (bus_id, seat_status);
 -- ----------------------------------------------------------------------------
 CREATE TABLE bookings (
     booking_id          SERIAL PRIMARY KEY,
+    user_id             INT REFERENCES users(user_id) ON DELETE SET NULL,
     pnr_number          VARCHAR(16) NOT NULL UNIQUE,
     bus_id              INT NOT NULL REFERENCES buses(bus_id) ON DELETE RESTRICT,
     journey_date        DATE NOT NULL,
@@ -97,6 +115,7 @@ CREATE TABLE bookings (
     CONSTRAINT chk_booking_status CHECK (booking_status IN ('CONFIRMED', 'CANCELLED'))
 );
 
+CREATE INDEX idx_bookings_user ON bookings (user_id);
 CREATE INDEX idx_bookings_pnr ON bookings (pnr_number);
 CREATE INDEX idx_bookings_bus_date ON bookings (bus_id, journey_date, booking_status);
 
