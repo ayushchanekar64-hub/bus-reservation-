@@ -1,0 +1,7 @@
+com\busreservation\BookingServiceTest.class
+com\busreservation\PNRGeneratorTest.class
+com\busreservation\SeatServiceTest.class
+com\busreservation\BusServiceTest.class
+com\busreservation\ValidationUtilTest.class
+com\busreservation\DatabaseConnectionTest.class
+com\busreservation\FareServiceTest.class

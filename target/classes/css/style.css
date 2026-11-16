@@ -1,0 +1,247 @@
+/* ==========================================================================
+   BUS RESERVATION SYSTEM - MODERN PREMIUM DESIGN SYSTEM
+   ========================================================================== */
+
+/* Root variables & background */
+.root {
+    -fx-font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    -fx-background-color: #F8FAFC;
+    -fx-text-fill: #1E293B;
+}
+
+/* ScrollPane Clean Styling */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+.scroll-bar:vertical, .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 8px;
+}
+.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+/* Navigation Bar */
+.navbar {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 14px 28px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.03), 8, 0, 0, 2);
+}
+
+.brand-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E3A8A;
+}
+
+.brand-badge {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #2563EB;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 3px 8px;
+    -fx-background-radius: 6px;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 6px;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #475569;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+.nav-button:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #0F172A;
+}
+.nav-button-active {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #2563EB;
+}
+
+/* Cards & Surfaces */
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 14px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.04), 12, 0, 0, 4);
+    -fx-padding: 24px;
+}
+
+.card-hover:hover {
+    -fx-border-color: #CBD5E1;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 16, 0, 0, 6);
+}
+
+/* Primary Hero Banner */
+.hero-banner {
+    -fx-background-color: linear-gradient(to right, #1E3A8A, #2563EB);
+    -fx-background-radius: 16px;
+    -fx-padding: 28px 36px;
+    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.25), 18, 0, 0, 6);
+}
+
+.hero-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.hero-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #BFDBFE;
+}
+
+/* Buttons */
+.btn-primary {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 22px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.3), 8, 0, 0, 2);
+}
+.btn-primary:hover {
+    -fx-background-color: #1D4ED8;
+}
+.btn-primary:pressed {
+    -fx-background-color: #1E40AF;
+}
+
+.btn-secondary {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #334155;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+}
+.btn-secondary:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #0F172A;
+}
+
+.btn-danger {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #DC2626;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-border-color: #FECACA;
+    -fx-border-radius: 8px;
+}
+.btn-danger:hover {
+    -fx-background-color: #FCA5A5;
+    -fx-text-fill: #991B1B;
+}
+
+.btn-action-orange {
+    -fx-background-color: #F97316;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 24px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(249, 115, 22, 0.35), 8, 0, 0, 2);
+}
+.btn-action-orange:hover {
+    -fx-background-color: #EA580C;
+}
+
+/* Form Controls */
+.text-field, .combo-box, .date-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #0F172A;
+}
+.text-field:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: #2563EB;
+    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.2), 6, 0, 0, 0);
+}
+
+/* Badges */
+.badge-ac {
+    -fx-background-color: #E0F2FE;
+    -fx-text-fill: #0369A1;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 3px 8px;
+    -fx-background-radius: 6px;
+}
+
+.badge-sleeper {
+    -fx-background-color: #F3E8FF;
+    -fx-text-fill: #7E22CE;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 3px 8px;
+    -fx-background-radius: 6px;
+}
+
+.badge-confirmed {
+    -fx-background-color: #DCFCE7;
+    -fx-text-fill: #15803D;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 6px;
+}
+
+.badge-cancelled {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #B91C1C;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 6px;
+}
+
+/* Top View Bus Realistic Styling */
+.bus-hull {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #94A3B8;
+    -fx-border-width: 2.5px;
+    -fx-border-radius: 36px 36px 16px 16px;
+    -fx-background-radius: 36px 36px 16px 16px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.12), 20, 0, 0, 8);
+}
+
+.driver-cabin {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 28px 28px 4px 4px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 0 0 1.5px 0;
+}
+
+.aisle-path {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 1px 0 1px;
+}
