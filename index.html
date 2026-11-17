@@ -2304,52 +2304,6 @@
                 </div>
                 <div class="testimonial-grid" id="testimonialGrid"></div>
             </div>
-
-            <!-- Frequently Asked Questions (FAQ Accordion) -->
-            <div style="margin-bottom:32px;">
-                <h3 style="font-weight:800;font-size:18px;color:var(--text-dark);margin-bottom:16px;">❓ Frequently Asked Questions</h3>
-                
-                <div class="faq-item">
-                    <div class="faq-header" onclick="toggleFaq(1)">
-                        <span>How does the interactive bus seat selection work?</span>
-                        <strong id="faq-icon-1" style="font-size:18px;color:var(--primary);">+</strong>
-                    </div>
-                    <div class="faq-body" id="faq-ans-1">
-                        Our realistic bus hull displays the full 2+2 or 2+1 layout including the driver cabin, entrance door, and emergency exits. Green seats are available, grey seats are already booked, and blue seats are your active selection. Window seats (ends with 'W') and Sleeper berths (ends with 'S') carry specialized luxury multipliers.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-header" onclick="toggleFaq(2)">
-                        <span>Can other passengers see my personal bookings?</span>
-                        <strong id="faq-icon-2" style="font-size:18px;color:var(--primary);">+</strong>
-                    </div>
-                    <div class="faq-body" id="faq-ans-2">
-                        No! SwiftBus implements strict per-user authentication and data isolation. When logged in as Aarav or Rajesh (or your own custom account), the "My Bookings" section exclusively filters and displays only your tickets. Other passengers' records remain strictly confidential.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-header" onclick="toggleFaq(3)">
-                        <span>Does the bus ticket fit on a single A4 page when printed?</span>
-                        <strong id="faq-icon-3" style="font-size:18px;color:var(--primary);">+</strong>
-                    </div>
-                    <div class="faq-body" id="faq-ans-3">
-                        Yes! Our print stylesheet guarantees that the entire commercial e-ticket—including journey timeline, passenger table, fare breakdown, verified stamp, scanner QR code, conductor stub, and guidelines—fits on exactly ONE single A4 page without spilling over.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-header" onclick="toggleFaq(4)">
-                        <span>Is a physical printout mandatory or is M-Ticket accepted?</span>
-                        <strong id="faq-icon-4" style="font-size:18px;color:var(--primary);">+</strong>
-                    </div>
-                    <div class="faq-body" id="faq-ans-4">
-                        Physical paper printout is 100% optional! Under the Motor Vehicles Act 1988, showing the electronic ticket on your mobile phone screen, WhatsApp, or SMS along with a valid original Government photo ID (Aadhaar / Voter ID / DL) is fully accepted by all conductors.
-                    </div>
-                </div>
-            </div>
-
         </div>
 
         <!-- VIEW 2: SEARCH RESULTS -->
@@ -3810,21 +3764,6 @@
                 resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 60);
         }
-
-        function toggleFaq(id) {
-            const ans = document.getElementById('faq-ans-' + id);
-            const icon = document.getElementById('faq-icon-' + id);
-            if (!ans) return;
-            const isOpen = ans.classList.contains('open');
-            if (isOpen) {
-                ans.classList.remove('open');
-                if (icon) icon.innerText = '+';
-            } else {
-                ans.classList.add('open');
-                if (icon) icon.innerText = '−';
-            }
-        }
-
 
         // Dynamic Passenger Reviews System
         let currentReviewRating = 5;
