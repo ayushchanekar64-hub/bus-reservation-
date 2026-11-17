@@ -11,6 +11,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SwiftBus">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- PDF generation libs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --primary: #2563EB;
@@ -2636,12 +2639,13 @@
                 <!-- Action Buttons (No-print) -->
                 <div class="no-print" style="text-align:center;margin-top:20px;">
                     <div class="ticket-actions-bar" style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
-                        <button class="btn-primary" style="font-size:14px;padding:12px 26px;" onclick="window.print()">🖨️ Print Ticket (Exact 1-Page A4)</button>
+                        <button class="btn-primary" style="font-size:14px;padding:12px 26px;" onclick="downloadTicketPDF()" id="btnDownloadPDF">⬇️ Download PDF Ticket</button>
+                        <button class="btn-swap" style="width:auto;padding:11px 22px;background:#6366F1;color:#fff;border:none;border-radius:8px;cursor:pointer;" onclick="window.print()">🖨️ Print</button>
                         <button class="btn-swap" style="width:auto;padding:11px 22px;" onclick="showView('bookings')">📑 View in My Bookings</button>
                         <button class="btn-swap" style="width:auto;padding:11px 22px;" onclick="showView('dashboard')">🏠 Book Another Journey</button>
                     </div>
                     <div style="font-size:11.5px;color:#64748B;">
-                        📄 Guaranteed: Fits completely on <strong>1 single A4 page</strong> without spilling to page 2.
+                        📄 PDF downloads directly — no print dialog needed. Fits on <strong>1 single A4 page</strong>.
                     </div>
                 </div>
             </div>
@@ -3996,6 +4000,63 @@
                 });
             } else {
                 showToast('To install, tap ⋮ in your browser menu and choose "Add to Home screen".');
+            }
+        }
+
+        // ─── PDF Ticket Download (replaces window.print) ───────────────────────
+        async function downloadTicketPDF() {
+            const btn = document.getElementById('btnDownloadPDF');
+            const ticket = document.getElementById('printableTicket');
+            if (!ticket) { showToast('No ticket to download.'); return; }
+
+            // Show loading state
+            const orig = btn.innerHTML;
+            btn.innerHTML = '⏳ Generating PDF…';
+            btn.disabled = true;
+
+            try {
+                // Capture ticket as canvas at 2× resolution for crisp output
+                const canvas = await html2canvas(ticket, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+
+                // A4 dimensions in mm
+                const A4_W = 210, A4_H = 297;
+                const imgW = canvas.width;
+                const imgH = canvas.height;
+
+                // Scale to fit A4 width
+                const ratio = A4_W / (imgW / 2 * 0.264583); // px→mm
+                const pdfH = (imgH / 2 * 0.264583);
+
+                const pdf = new jsPDF({
+                    orientation: pdfH > A4_H ? 'portrait' : 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                // Centre vertically if shorter than A4
+                const topMargin = pdfH < A4_H ? (A4_H - pdfH) / 2 : 0;
+                pdf.addImage(imgData, 'PNG', 0, topMargin, A4_W, pdfH > A4_H ? A4_H : pdfH);
+
+                // Build filename from PNR
+                const pnrEl = document.getElementById('ticketPNR') || document.querySelector('.ticket-pnr');
+                const pnr = pnrEl ? pnrEl.textContent.replace(/[^A-Z0-9-]/g, '') : 'TICKET';
+                pdf.save(`SwiftBus_${pnr}.pdf`);
+
+                showToast('✅ PDF downloaded successfully!');
+            } catch(e) {
+                console.error('PDF gen error:', e);
+                showToast('❌ PDF failed. Try the Print button instead.');
+            } finally {
+                btn.innerHTML = orig;
+                btn.disabled = false;
             }
         }
     </script>
