@@ -1,24 +1,28 @@
 package com.busreservation.util;
 
 import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Utility for generating cryptographically randomized, human-readable PNRs.
+ * Utility for generating cryptographically randomized, human-readable, unique PNRs.
  * Format: PNR-XXXXXXX (e.g., PNR-7824901)
  */
 public final class PNRGenerator {
     private static final SecureRandom RANDOM = new SecureRandom();
-    private static final String DIGITS = "0123456789";
+    private static final Set<String> ISSUED_PNRS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private PNRGenerator() {
     }
 
     public static String generatePNR() {
-        StringBuilder sb = new StringBuilder("PNR-");
-        // 7 numeric digits
-        for (int i = 0; i < 7; i++) {
-            sb.append(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())));
+        while (true) {
+            int randomNum = 1000000 + RANDOM.nextInt(9000000); // 7 digit guarantee
+            String pnr = "PNR-" + randomNum;
+            if (ISSUED_PNRS.add(pnr)) {
+                return pnr;
+            }
         }
-        return sb.toString();
     }
 }

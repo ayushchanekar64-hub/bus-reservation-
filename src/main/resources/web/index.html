@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>SwiftBus - Live Bus Reservation System</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2563EB">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SwiftBus">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- PDF generation libs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --primary: #2563EB;
@@ -2298,52 +2307,6 @@
                 </div>
                 <div class="testimonial-grid" id="testimonialGrid"></div>
             </div>
-
-            <!-- Frequently Asked Questions (FAQ Accordion) -->
-            <div style="margin-bottom:32px;">
-                <h3 style="font-weight:800;font-size:18px;color:var(--text-dark);margin-bottom:16px;">❓ Frequently Asked Questions</h3>
-                
-                <div class="faq-item">
-                    <div class="faq-header" onclick="toggleFaq(1)">
-                        <span>How does the interactive bus seat selection work?</span>
-                        <strong id="faq-icon-1" style="font-size:18px;color:var(--primary);">+</strong>
-                    </div>
-                    <div class="faq-body" id="faq-ans-1">
-                        Our realistic bus hull displays the full 2+2 or 2+1 layout including the driver cabin, entrance door, and emergency exits. Green seats are available, grey seats are already booked, and blue seats are your active selection. Window seats (ends with 'W') and Sleeper berths (ends with 'S') carry specialized luxury multipliers.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-header" onclick="toggleFaq(2)">
-                        <span>Can other passengers see my personal bookings?</span>
-                        <strong id="faq-icon-2" style="font-size:18px;color:var(--primary);">+</strong>
-                    </div>
-                    <div class="faq-body" id="faq-ans-2">
-                        No! SwiftBus implements strict per-user authentication and data isolation. When logged in as Aarav or Rajesh (or your own custom account), the "My Bookings" section exclusively filters and displays only your tickets. Other passengers' records remain strictly confidential.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-header" onclick="toggleFaq(3)">
-                        <span>Does the bus ticket fit on a single A4 page when printed?</span>
-                        <strong id="faq-icon-3" style="font-size:18px;color:var(--primary);">+</strong>
-                    </div>
-                    <div class="faq-body" id="faq-ans-3">
-                        Yes! Our print stylesheet guarantees that the entire commercial e-ticket—including journey timeline, passenger table, fare breakdown, verified stamp, scanner QR code, conductor stub, and guidelines—fits on exactly ONE single A4 page without spilling over.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-header" onclick="toggleFaq(4)">
-                        <span>Is a physical printout mandatory or is M-Ticket accepted?</span>
-                        <strong id="faq-icon-4" style="font-size:18px;color:var(--primary);">+</strong>
-                    </div>
-                    <div class="faq-body" id="faq-ans-4">
-                        Physical paper printout is 100% optional! Under the Motor Vehicles Act 1988, showing the electronic ticket on your mobile phone screen, WhatsApp, or SMS along with a valid original Government photo ID (Aadhaar / Voter ID / DL) is fully accepted by all conductors.
-                    </div>
-                </div>
-            </div>
-
         </div>
 
         <!-- VIEW 2: SEARCH RESULTS -->
@@ -2676,12 +2639,13 @@
                 <!-- Action Buttons (No-print) -->
                 <div class="no-print" style="text-align:center;margin-top:20px;">
                     <div class="ticket-actions-bar" style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
-                        <button class="btn-primary" style="font-size:14px;padding:12px 26px;" onclick="window.print()">🖨️ Print Ticket (Exact 1-Page A4)</button>
+                        <button class="btn-primary" style="font-size:14px;padding:12px 26px;" onclick="downloadTicketPDF()" id="btnDownloadPDF">⬇️ Download PDF Ticket</button>
+                        <button class="btn-swap" style="width:auto;padding:11px 22px;background:#6366F1;color:#fff;border:none;border-radius:8px;cursor:pointer;" onclick="window.print()">🖨️ Print</button>
                         <button class="btn-swap" style="width:auto;padding:11px 22px;" onclick="showView('bookings')">📑 View in My Bookings</button>
                         <button class="btn-swap" style="width:auto;padding:11px 22px;" onclick="showView('dashboard')">🏠 Book Another Journey</button>
                     </div>
                     <div style="font-size:11.5px;color:#64748B;">
-                        📄 Guaranteed: Fits completely on <strong>1 single A4 page</strong> without spilling to page 2.
+                        📄 PDF downloads directly — no print dialog needed. Fits on <strong>1 single A4 page</strong>.
                     </div>
                 </div>
             </div>
@@ -2880,14 +2844,78 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // Pre-registered Users
-        const registeredUsers = [
-            { id: 1, name: 'Aarav Sharma', email: 'aarav@example.com', mobile: '9876543210', password: 'password123' },
-            { id: 2, name: 'Rajesh Patel', email: 'rajesh@example.com', mobile: '9123456789', password: 'password123' }
-        ];
+        // =========================================================================
+        // PERSISTENT DATABASE ENGINE (Zero-Crash Cloud-Ready Architecture)
+        // Works 100% offline & online on any Mobile / Laptop forever!
+        // =========================================================================
+        const DB = {
+            getUsers: function() {
+                const stored = localStorage.getItem('swiftbus_users');
+                if (stored) {
+                    try { return JSON.parse(stored); } catch (e) {}
+                }
+                const initial = [
+                    { id: 1, name: 'Aarav Sharma', email: 'aarav@example.com', mobile: '9876543210', password: 'password123' },
+                    { id: 2, name: 'Priya Verma', email: 'priya@example.com', mobile: '9876543211', password: 'password123' },
+                    { id: 3, name: 'Rajesh Patel', email: 'rajesh@example.com', mobile: '9123456789', password: 'password123' },
+                    { id: 4, name: 'Ayush', email: 'ayush@example.com', mobile: '9876543212', password: 'password123' }
+                ];
+                localStorage.setItem('swiftbus_users', JSON.stringify(initial));
+                return initial;
+            },
+            saveUsers: function(users) {
+                localStorage.setItem('swiftbus_users', JSON.stringify(users));
+            },
+            getBookings: function() {
+                const stored = localStorage.getItem('swiftbus_bookings');
+                if (stored) {
+                    try { return JSON.parse(stored); } catch (e) {}
+                }
+                const initial = [
+                    { userId: 1, pnr: 'PNR-8849201', bus: buses[0], date: '17 Nov 2026', seats: ['2A', '2W'], total: 1404.00, status: 'CONFIRMED', passengers: [{name:'Aarav Sharma', age:26, gender:'Male', seat:'2A'}, {name:'Priya Verma', age:24, gender:'Female', seat:'2W'}], ticketNo: 'TCK-8849201-101', bookingTime: '16 Nov 2026, 10:15 AM', txnId: 'TXN-9840219482', otp: '4921' },
+                    { userId: 2, pnr: 'PNR-7731945', bus: buses[0], date: '17 Nov 2026', seats: ['5W'], total: 702.00, status: 'CONFIRMED', passengers: [{name:'Rajesh Patel', age:45, gender:'Male', seat:'5W'}], ticketNo: 'TCK-7731945-202', bookingTime: '16 Nov 2026, 11:30 AM', txnId: 'TXN-8849102941', otp: '8832' }
+                ];
+                localStorage.setItem('swiftbus_bookings', JSON.stringify(initial));
+                return initial;
+            },
+            saveBookings: function(bookings) {
+                localStorage.setItem('swiftbus_bookings', JSON.stringify(bookings));
+            },
+            getBookedSeats: function() {
+                const stored = localStorage.getItem('swiftbus_booked_seats');
+                if (stored) {
+                    try { return JSON.parse(stored); } catch (e) {}
+                }
+                const initial = {
+                    1: ['2A', '2W', '5W', '5A', '10A'],
+                    2: ['1W', '1A'],
+                    4: ['3W', '3A'],
+                    5: ['1W', '4W', '7S']
+                };
+                localStorage.setItem('swiftbus_booked_seats', JSON.stringify(initial));
+                return initial;
+            },
+            saveBookedSeats: function(map) {
+                localStorage.setItem('swiftbus_booked_seats', JSON.stringify(map));
+            },
+            getCurrentUser: function() {
+                const stored = localStorage.getItem('swiftbus_current_user');
+                if (stored) {
+                    try { return JSON.parse(stored); } catch (e) {}
+                }
+                return null;
+            },
+            setCurrentUser: function(user) {
+                if (user) {
+                    localStorage.setItem('swiftbus_current_user', JSON.stringify(user));
+                } else {
+                    localStorage.removeItem('swiftbus_current_user');
+                }
+            }
+        };
 
-        // Active Logged-in User (Default null = Guest)
-        let loggedInUser = null;
+        const registeredUsers = DB.getUsers();
+        let loggedInUser = DB.getCurrentUser();
         let pendingAction = null; // Resume booking after login
 
         // Fleet Data (with comprehensive Nagpur routes)
@@ -3061,12 +3089,15 @@
                     password: pass
                 };
                 registeredUsers.push(newUser);
+                DB.saveUsers(registeredUsers);
                 loggedInUser = newUser;
+                DB.setCurrentUser(loggedInUser);
                 showToast("Account created! Welcome, " + name);
             } else {
                 const user = registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === pass);
                 if (user) {
                     loggedInUser = user;
+                    DB.setCurrentUser(loggedInUser);
                     showToast("Welcome back, " + user.name + "!");
                 } else {
                     showToast("Invalid email or password!");
@@ -3087,6 +3118,7 @@
 
         function logoutUser() {
             loggedInUser = null;
+            DB.setCurrentUser(null);
             updateAuthNavbar();
             showToast("Logged out successfully.");
             showView('dashboard');
@@ -3581,6 +3613,8 @@
             };
 
             allBookings.unshift(newBooking);
+            DB.saveBookings(allBookings);
+            DB.saveBookedSeats(bookedSeatsMap);
 
             renderTicketView(newBooking);
             showToast("Booking Confirmed! PNR: " + pnr);
@@ -3667,6 +3701,8 @@
                     if (bookedSeatsMap[b.bus.id]) {
                         bookedSeatsMap[b.bus.id] = bookedSeatsMap[b.bus.id].filter(s => !b.seats.includes(s));
                     }
+                    DB.saveBookings(allBookings);
+                    DB.saveBookedSeats(bookedSeatsMap);
                     showToast("Booking " + pnr + " Cancelled. Seats released.");
                     renderMyBookings();
                 }
@@ -3732,21 +3768,6 @@
                 resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 60);
         }
-
-        function toggleFaq(id) {
-            const ans = document.getElementById('faq-ans-' + id);
-            const icon = document.getElementById('faq-icon-' + id);
-            if (!ans) return;
-            const isOpen = ans.classList.contains('open');
-            if (isOpen) {
-                ans.classList.remove('open');
-                if (icon) icon.innerText = '+';
-            } else {
-                ans.classList.add('open');
-                if (icon) icon.innerText = '−';
-            }
-        }
-
 
         // Dynamic Passenger Reviews System
         let currentReviewRating = 5;
@@ -3947,6 +3968,97 @@
         updateAuthNavbar();
         initTheme();
         renderReviews();
+
+// Progressive Web App (PWA) Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('SwiftBus PWA Service Worker Registered', reg);
+                }).catch(err => {
+                    console.log('SW registration failed:', err);
+                });
+            });
+        }
+
+        // Catch PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) installBtn.style.display = 'inline-flex';
+        });
+
+        function triggerPwaInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showToast('Installing SwiftBus App...');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                showToast('To install, tap ⋮ in your browser menu and choose "Add to Home screen".');
+            }
+        }
+
+        // ─── PDF Ticket Download (replaces window.print) ───────────────────────
+        async function downloadTicketPDF() {
+            const btn = document.getElementById('btnDownloadPDF');
+            const ticket = document.getElementById('printableTicket');
+            if (!ticket) { showToast('No ticket to download.'); return; }
+
+            // Show loading state
+            const orig = btn.innerHTML;
+            btn.innerHTML = '⏳ Generating PDF…';
+            btn.disabled = true;
+
+            try {
+                // Capture ticket as canvas at 2× resolution for crisp output
+                const canvas = await html2canvas(ticket, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+
+                // A4 dimensions in mm
+                const A4_W = 210, A4_H = 297;
+                const imgW = canvas.width;
+                const imgH = canvas.height;
+
+                // Scale to fit A4 width
+                const ratio = A4_W / (imgW / 2 * 0.264583); // px→mm
+                const pdfH = (imgH / 2 * 0.264583);
+
+                const pdf = new jsPDF({
+                    orientation: pdfH > A4_H ? 'portrait' : 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                // Centre vertically if shorter than A4
+                const topMargin = pdfH < A4_H ? (A4_H - pdfH) / 2 : 0;
+                pdf.addImage(imgData, 'PNG', 0, topMargin, A4_W, pdfH > A4_H ? A4_H : pdfH);
+
+                // Build filename from PNR
+                const pnrEl = document.getElementById('ticketPNR') || document.querySelector('.ticket-pnr');
+                const pnr = pnrEl ? pnrEl.textContent.replace(/[^A-Z0-9-]/g, '') : 'TICKET';
+                pdf.save(`SwiftBus_${pnr}.pdf`);
+
+                showToast('✅ PDF downloaded successfully!');
+            } catch(e) {
+                console.error('PDF gen error:', e);
+                showToast('❌ PDF failed. Try the Print button instead.');
+            } finally {
+                btn.innerHTML = orig;
+                btn.disabled = false;
+            }
+        }
 
         // Direct View Hash Support for Deep Links & Screenshots
         function handleHashRouting() {

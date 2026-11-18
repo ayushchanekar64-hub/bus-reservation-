@@ -1,0 +1,18 @@
+{
+  "name": "SwiftBus - Bus Reservation System",
+  "short_name": "SwiftBus",
+  "description": "Book intercity bus tickets, interactive seat selection and live boarding passes.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2563EB",
+  "theme_color": "#2563EB",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%232563EB'/><path d='M120 180h272v150a20 20 0 01-20 20H140a20 20 0 01-20-20V180zm0-40a40 40 0 0140-40h192a40 40 0 0140 40v30H120v-30zm40 230v30a20 20 0 01-20 20h-10a10 10 0 01-10-10v-40h40zm232 0v40a10 10 0 01-10 10h-10a20 20 0 01-20-20v-30h40z' fill='white'/><circle cx='180' cy='310' r='20' fill='%23F59E0B'/><circle cx='332' cy='310' r='20' fill='%23F59E0B'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -148,18 +148,23 @@ public class PostgresBookingDAO implements BookingDAO {
             }
 
             // STEP 2: Insert into bookings table
-            String bookingSql = "INSERT INTO bookings (pnr_number, bus_id, journey_date, booking_date, " +
-                    "total_fare, booking_status, contact_phone, contact_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String bookingSql = "INSERT INTO bookings (user_id, pnr_number, bus_id, journey_date, booking_date, " +
+                    "total_fare, booking_status, contact_phone, contact_email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             int generatedBookingId;
             try (PreparedStatement psBooking = conn.prepareStatement(bookingSql, Statement.RETURN_GENERATED_KEYS)) {
-                psBooking.setString(1, booking.getPnrNumber());
-                psBooking.setInt(2, booking.getBus().getBusId());
-                psBooking.setDate(3, Date.valueOf(booking.getJourneyDate()));
-                psBooking.setTimestamp(4, Timestamp.valueOf(booking.getBookingDate()));
-                psBooking.setDouble(5, booking.getTotalFare());
-                psBooking.setString(6, booking.getBookingStatus().name());
-                psBooking.setString(7, booking.getContactPhone());
-                psBooking.setString(8, booking.getContactEmail());
+                if (booking.getUserId() > 0) {
+                    psBooking.setInt(1, booking.getUserId());
+                } else {
+                    psBooking.setNull(1, Types.INTEGER);
+                }
+                psBooking.setString(2, booking.getPnrNumber());
+                psBooking.setInt(3, booking.getBus().getBusId());
+                psBooking.setDate(4, Date.valueOf(booking.getJourneyDate()));
+                psBooking.setTimestamp(5, Timestamp.valueOf(booking.getBookingDate()));
+                psBooking.setDouble(6, booking.getTotalFare());
+                psBooking.setString(7, booking.getBookingStatus().name());
+                psBooking.setString(8, booking.getContactPhone());
+                psBooking.setString(9, booking.getContactEmail());
                 psBooking.executeUpdate();
 
                 try (ResultSet rsKey = psBooking.getGeneratedKeys()) {
@@ -316,7 +321,12 @@ public class PostgresBookingDAO implements BookingDAO {
             }
         }
 
-        return new Booking(id, pnr, bus, jDate, bDate, fare, status, phone, email);
+        Booking booking = new Booking(id, pnr, bus, jDate, bDate, fare, status, phone, email);
+        int userId = rs.getInt("user_id");
+        if (!rs.wasNull()) {
+            booking.setUserId(userId);
+        }
+        return booking;
     }
 
     private void loadBookingPassengers(Booking booking, Connection conn) throws SQLException {
