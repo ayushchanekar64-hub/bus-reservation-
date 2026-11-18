@@ -3947,6 +3947,23 @@
         updateAuthNavbar();
         initTheme();
         renderReviews();
+
+        // Direct View Hash Support for Deep Links & Screenshots
+        function handleHashRouting() {
+            const hash = window.location.hash;
+            if (hash === '#search') {
+                quickSearch('Nagpur', 'Pune');
+            } else if (hash === '#seats') {
+                quickSearch('Nagpur', 'Pune');
+                setTimeout(() => { selectBus(1); }, 150);
+            } else if (hash === '#ticket') {
+                viewTicketByPnr('PNR-8849201');
+            } else if (hash === '#dark') {
+                setTheme('dark');
+            }
+        }
+        handleHashRouting();
+        window.addEventListener('hashchange', handleHashRouting);
     </script>
 </body>
 </html>
