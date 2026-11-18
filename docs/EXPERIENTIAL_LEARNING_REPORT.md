@@ -1,19 +1,22 @@
 # EXPERIENTIAL LEARNING REPORT
 **Course:** Masters in Computer Applications (MCA) – 1st Year, Semester I  
-**Subject:** Object Oriented Programming Lab  
-**Institute:** S. B. Jain Institute of Technology, Management & Research, Nagpur  
+**Subject:** Object Oriented Programming Lab (PCCMC106P)  
+**Institute:** S. B. Jain Institute of Technology, Management & Research, Nagpur (Autonomous Institute, Affiliated to RTMNU)  
+**Department:** Department of Computer Applications  
 **Project Title:** Smart Intercity Bus Reservation & Ticketing System ("SwiftBus")  
-**Faculty Guide:** Mr. Anupam R. Bhowate (Assistant Professor)  
-**Submitted By:** [Your Name] (Roll No: [MC26___])  
+**Faculty Guide:** Mr. Anupam R. Bhowate (Assistant Professor & Course Coordinator)  
+**Submitted By:** Mr. Ayush Chanekar  
+**Roll Number:** MCA26187  
+**Section:** Section D  
 
 ---
 
 ## COVER PAGE DETAILS (To Fill in College Template)
 - **Project Title:** Smart Intercity Bus Reservation & Ticketing System ("SwiftBus")
-- **Student Name:** [Your Name]
-- **Roll Number:** [MC26___]
-- **Class / Semester:** MCA 1st Year, Sem I
-- **Subject:** Object Oriented Programming Lab
+- **Student Name:** Mr. Ayush Chanekar
+- **Roll Number:** MCA26187
+- **Class / Semester:** MCA 1st Year, Sem I (Section D)
+- **Subject:** Object Oriented Programming Lab (Course Code: PCCMC106P)
 - **Guide:** Mr. Anupam R. Bhowate, Assistant Professor
 
 ---
